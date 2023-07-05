@@ -1,3 +1,4 @@
+git https://github.com/retendo/Giraffe.git tempNugetVersionBump build: "dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=7.0.0 -o nupkg src/Giraffe/Giraffe.fsproj", Packages: /
 source https://api.nuget.org/v3/index.json
 
 storage: none
@@ -8,7 +9,7 @@ nuget NSubstitute
 nuget BenchmarkDotNet
 nuget Microsoft.AspNetCore.TestHost
 
-nuget Giraffe
+nuget Giraffe >= 7.0.0
 
 nuget Microsoft.AspNetCore.Authentication.JwtBearer
 nuget Microsoft.AspNetCore.Authentication.Google
