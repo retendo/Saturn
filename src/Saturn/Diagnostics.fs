@@ -56,7 +56,14 @@ module SiteMap =
             )
     let private state = ResizeArray<HandlerMap> ()
 
-    let internal add hm = state.Add(hm)
+    // PATCH (noflair, memory-leak fix): gate this unbounded, process-global registry behind the
+    // existing isDebug flag. Saturn calls `add` on EVERY router{}/controller{} build (Router.fs:247,
+    // Controller.fs:386) and never clears `state`, so building routers per request (e.g. a Saturn
+    // `forwardf` handler that constructs a controller) leaks every HandlerMap + captured closure into
+    // Gen 2. Gating here makes `disable_diagnostics` actually stop the accumulation in production.
+    // NOTE: the app consumes Saturn as ./nupkg/Saturn.*.nupkg — this source edit only takes effect
+    // after the fork is re-packed and re-restored.
+    let internal add hm = if isDebug then state.Add(hm)
     let internal generate () =
         try
           match state |> Seq.tryLast with
